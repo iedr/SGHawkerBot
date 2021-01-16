@@ -1,6 +1,7 @@
 import requests
 import logging
 import json
+import pandas as pd
 from itertools import chain
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -80,7 +81,7 @@ def get_relevant_fields_as_dict(record) -> dict:
 logging.info("Fetching hawker records from API")
 api_records = fetch_records_from_api()
 hawker_data = [get_relevant_fields_as_dict(r) for r in api_records]
+hawker_data_df = pd.DataFrame(hawker_data)
 
-logging.info("Dumping results into JSON file")
-with open("./hawker_data.json", 'w') as f:
-    json.dump(hawker_data, f)
+logging.info("Dumping results into CSV file")
+hawker_data_df.to_csv("hawker_data.csv")

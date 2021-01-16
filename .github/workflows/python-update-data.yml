@@ -1,0 +1,33 @@
+name: Python Package using Conda
+on:
+  schedule:
+    - cron: "39 04 * * *"
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: List files in current directory
+      run: ls
+    - name: Install dependencies
+      run: |
+        conda env create -f environment.yml --name hawker
+    - name: Activate environment
+      run: |
+        source activate hawker
+    - name: Run py files to update data files
+      run: |
+        python data_utils.py
+        python mrt_hawker_dist.py

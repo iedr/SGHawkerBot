@@ -77,8 +77,10 @@ def get_relevant_fields_as_dict(record) -> dict:
     }
 
 
+logging.info("Fetching hawker records from API")
 api_records = fetch_records_from_api()
 hawker_data = [get_relevant_fields_as_dict(r) for r in api_records]
 
+logging.info("Dumping results into JSON file")
 with open("./hawker_data.json", 'w') as f:
     json.dump(hawker_data, f)

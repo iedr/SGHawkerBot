@@ -32,8 +32,7 @@ jobs:
         pip install python-telegram-bot --upgrade
         pip install geopy
         pip install fuzzywuzzy
-        $CONDA/bin/conda install geopandas
-        $CONDA/bin/conda install 
+        $CONDA/bin/conda install geopandas -y
     - name: Run py files to update data files
       run: |
         $CONDA/bin/python data_utils.py

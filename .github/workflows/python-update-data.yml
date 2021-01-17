@@ -41,6 +41,10 @@ jobs:
     - name: Get current time
       uses: gerred/actions/current-time@master
       id: current-time
+      
+    - name: List files in directory
+      run: |
+        ls -l
 
     - name: push to repo
       env:
@@ -48,8 +52,6 @@ jobs:
       run: |
         git config user.name darensin01
         git config user.email darensin01@gmail.com
-        git pull
-        git status
         git add hawker_data.json mrt_data.csv mrt_hawker_distances.json
         git commit -m "$TIME: new data pushed"
         git push

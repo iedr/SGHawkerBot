@@ -48,9 +48,8 @@ jobs:
         git config user.email darensin01@gmail.com
         
     - name: Git add, commit, push
+      uses: stefanzweifel/git-auto-commit-action@v4
       env:
         TIME: "${{ steps.current-time.outputs.time }}"
-      run: |
-        git add hawker_data.json mrt_data.csv mrt_hawker_distances.json
-        git commit -m "$TIME: new data pushed"
-        git push -u origin master
+      with:
+        commit_message: "$TIME: new data pushed"

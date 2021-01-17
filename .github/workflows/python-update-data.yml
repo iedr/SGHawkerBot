@@ -11,6 +11,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
@@ -37,3 +39,17 @@ jobs:
       run: |
         $CONDA/bin/python data_utils.py
         $CONDA/bin/python mrt_hawker_dist.py
+    
+    - name: Get current time
+      uses: gerred/actions/current-time@master
+      id: current-time
+
+    - name: push to repo
+      env:
+        TIME: "${{ steps.current-time.outputs.time }}"
+      run: |
+        git config user.name darensin01
+        git config user.email darensin01@gmail.com
+        git add .
+        git commit -m "$TIME: new data pushed"
+        git push

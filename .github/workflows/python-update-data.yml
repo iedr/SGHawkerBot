@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         $CONDA/bin/conda create -y --name hawker python=3.7
-        $CONDA/bin/conda install --force-reinstall -y -q --name hawker -c conda-forge --file requirements.txt
+        $CONDA/bin/conda env update --name hawker --file environment.yml
     - name: Activate environment
       run: |
         $CONDA/bin/source activate hawker

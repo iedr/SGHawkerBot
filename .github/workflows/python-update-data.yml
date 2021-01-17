@@ -49,7 +49,5 @@ jobs:
         
     - name: Git add, commit, push
       uses: stefanzweifel/git-auto-commit-action@v4
-      env:
-        TIME: "${{ steps.current-time.outputs.time }}"
       with:
-        commit_message: "$TIME: new data pushed"
+        commit_message: "${{ steps.current-time.outputs.time }}: new data pushed"

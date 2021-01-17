@@ -42,16 +42,15 @@ jobs:
       uses: gerred/actions/current-time@master
       id: current-time
       
-    - name: List files in directory
-      run: |
-        ls -l
-
-    - name: push to repo
-      env:
-        TIME: "${{ steps.current-time.outputs.time }}"
+    - name: Git config
       run: |
         git config user.name darensin01
         git config user.email darensin01@gmail.com
+        
+    - name: Git add, commit, push
+      env:
+        TIME: "${{ steps.current-time.outputs.time }}"
+      run: |
         git add hawker_data.json mrt_data.csv mrt_hawker_distances.json
         git commit -m "$TIME: new data pushed"
-        git push
+        git push -u origin master

@@ -1,7 +1,7 @@
 name: Python Package using Conda
 on:
-  push:
-    branches: [ main ]
+  schedule:
+    - cron: "0 8 * * 1"
 
 jobs:
   build-linux:

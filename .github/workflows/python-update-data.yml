@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: Update data using Python
 on:
   schedule:
     - cron: "0 8 * * 1"

@@ -21,13 +21,19 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: List files in current directory
       run: cd $CONDA/bin && ls
-    - name: Install dependencies
+    - name: Create environment
       run: |
         $CONDA/bin/conda create -y --name hawker python=3.7
-        $CONDA/bin/conda env update --name hawker --file environment.yml
     - name: Activate environment
       run: |
         $CONDA/bin/source activate hawker
+    - name: Install libraries in environment
+      run: |
+        pip install python-telegram-bot --upgrade
+        pip install geopy
+        pip install fuzzywuzzy
+        $CONDA/bin/conda install geopandas
+        $CONDA/bin/conda install 
     - name: Run py files to update data files
       run: |
         $CONDA/bin/python data_utils.py

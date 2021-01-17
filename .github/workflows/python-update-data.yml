@@ -26,7 +26,7 @@ jobs:
         $CONDA/bin/conda create -y --name hawker python=3.7
     - name: Activate environment
       run: |
-        $CONDA/bin/source activate hawker
+        $CONDA/bin/activate hawker
     - name: Install libraries in environment
       run: |
         pip install python-telegram-bot --upgrade

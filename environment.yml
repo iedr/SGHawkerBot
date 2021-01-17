@@ -107,4 +107,3 @@ dependencies:
     - tornado==6.1
     - tzlocal==2.1
     - urllib3==1.26.2
-prefix: C:\Users\DS\Anaconda3\envs\hawker

@@ -1,7 +1,32 @@
 import geopandas
 import pandas as pd
 from geopy import distance
+import zipfile
+import os
+import glob
 import logging
+import requests
+
+
+def download_and_unzip_mrt_data():
+    link = "https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/TrainStation.zip"
+    r = requests.get(link, stream=True)
+    logging.info("Done with downloading MRT data from LTA datamall")
+    with open("./TrainStation.zip", 'wb') as fd:
+        for chunk in r.iter_content(chunk_size=128):
+            fd.write(chunk)
+
+    with zipfile.ZipFile("./TrainStation.zip") as zf:
+        zf.extractall(path="./mrt_station_data")
+
+    # Should only have 1 folder in zip file
+    for folder in glob.glob("./mrt_station_data/*", recursive=False):
+        for file in os.listdir(folder):
+            source_name = os.path.join(folder, file)
+            dest_name = os.path.join("./mrt_station_data", file)
+            os.rename(source_name, dest_name)
+
+    os.remove("./TrainStation.zip")
 
 
 def clean_mrt_station(s):
@@ -10,6 +35,9 @@ def clean_mrt_station(s):
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
+
+logging.info("Downloading new MRT data")
+download_and_unzip_mrt_data()
 
 logging.info("Reading SHP file")
 df = geopandas.read_file("./mrt_station_data/MRTLRTStnPtt.shp")

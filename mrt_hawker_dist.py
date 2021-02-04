@@ -4,32 +4,43 @@ from geopy import distance
 import zipfile
 import os
 import glob
+import shutil
 import logging
 import requests
 
+MRT_DATA_FOLDER = "./mrt_station_data"
+MRT_DATA_ZIP_FOLDER = "TrainStation.zip"
+
+
+def renew_data_folder():
+    if os.path.exists(MRT_DATA_FOLDER):
+        shutil.rmtree(MRT_DATA_FOLDER)
+
+    os.mkdir(MRT_DATA_FOLDER)
+
 
 def download_and_unzip_mrt_data():
-    link = "https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/TrainStation.zip"
+    renew_data_folder()
+
+    link = f"https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/{MRT_DATA_ZIP_FOLDER}"
     r = requests.get(link, stream=True)
     logging.info("Done with downloading MRT data from LTA datamall")
-    with open("./TrainStation.zip", 'wb') as fd:
+    with open(MRT_DATA_ZIP_FOLDER, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=128):
             fd.write(chunk)
 
-    with zipfile.ZipFile("./TrainStation.zip") as zf:
-        zf.extractall(path="./mrt_station_data")
+    with zipfile.ZipFile(MRT_DATA_ZIP_FOLDER) as zf:
+        zf.extractall(path=MRT_DATA_FOLDER)
 
     # Should only have 1 folder in zip file
-    for folder in glob.glob("./mrt_station_data/*", recursive=False):
-        if not os.path.isdir(folder):
-            continue
-
+    for folder in glob.glob(f"{MRT_DATA_FOLDER}/*", recursive=False):
         for file in os.listdir(folder):
             source_name = os.path.join(folder, file)
-            dest_name = os.path.join("./mrt_station_data", file)
+            dest_name = os.path.join(MRT_DATA_FOLDER, file)
             os.rename(source_name, dest_name)
+        os.rmdir(folder)
 
-    os.remove("./TrainStation.zip")
+    os.remove(MRT_DATA_ZIP_FOLDER)
 
 
 def clean_mrt_station(s):
@@ -43,7 +54,7 @@ logging.info("Downloading new MRT data")
 download_and_unzip_mrt_data()
 
 logging.info("Reading SHP file")
-df = geopandas.read_file("./mrt_station_data/MRTLRTStnPtt.shp")
+df = geopandas.read_file(os.path.join(MRT_DATA_FOLDER, "MRTLRTStnPtt.shp"))
 df = df.to_crs(crs="WGS84")
 
 df['lat'] = df['geometry'].apply(lambda p: p.y)

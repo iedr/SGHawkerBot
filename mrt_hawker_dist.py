@@ -24,7 +24,7 @@ def download_and_unzip_mrt_data():
 
     link = f"https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/{MRT_DATA_ZIP_FOLDER}"
     r = requests.get(link, stream=True)
-    logging.info("Done with downloading MRT data from LTA datamall")
+    logging.info("Done with downloading MRT data from LTA data-mall")
     with open(MRT_DATA_ZIP_FOLDER, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=128):
             fd.write(chunk)

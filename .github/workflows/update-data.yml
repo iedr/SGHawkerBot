@@ -1,9 +1,7 @@
 name: Update data using Python
 on:
-  push:
-    branches: main
-#   schedule:
-#     - cron: "0 8 * * 1"
+  schedule:
+    - cron: "0 8 * * 1"
 
 jobs:
   build-linux:

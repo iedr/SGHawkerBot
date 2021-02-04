@@ -21,6 +21,9 @@ def download_and_unzip_mrt_data():
 
     # Should only have 1 folder in zip file
     for folder in glob.glob("./mrt_station_data/*", recursive=False):
+        if not os.path.isdir(folder):
+            continue
+
         for file in os.listdir(folder):
             source_name = os.path.join(folder, file)
             dest_name = os.path.join("./mrt_station_data", file)

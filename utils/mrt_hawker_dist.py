@@ -66,7 +66,7 @@ df.to_csv("./mrt_data.csv")
 
 # Read in Hawker Centre locations
 logging.info("Reading in Hawker data file")
-hawker_data_df = pd.read_json("hawker_data.json")[['hawker_name', 'hawker_coords']]
+hawker_data_df = pd.read_json("../data/hawker_data.json")[['hawker_name', 'hawker_coords']]
 
 mrt_hawker_dist = []
 for _, hawker_row in hawker_data_df.iterrows():

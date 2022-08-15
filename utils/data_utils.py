@@ -1,10 +1,80 @@
 import requests
 import logging
 import json
+import pandas as pd
+import utils
+import date_utils
+from datetime import datetime
 from itertools import chain
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
+
+
+def get_hawker_mrt_dist_df(config):
+    hawker_mrt_dist_json = utils.get_json_data_from_url(config.get("urls", "mrt_hawker_distances"))
+    df = pd.DataFrame.from_records(hawker_mrt_dist_json)
+    return df
+
+
+def get_hawker_data_df(config):
+    hawker_data_json = utils.get_json_data_from_url(config.get("urls", "hawker_data"))
+    df = pd.DataFrame.from_records(hawker_data_json)
+    df = prepare_hawker_data(df)
+    return df
+
+
+def get_hawkers_washing(df, this_week=False, next_week=False) -> pd.DataFrame:
+    start_date = end_date = date_utils.get_date_today()
+    if this_week:
+        start_date, end_date = date_utils.get_date_range_in_weeks(start_week=0, end_week=1)
+    elif next_week:
+        start_date, end_date = date_utils.get_date_range_in_weeks(start_week=1, end_week=2)
+
+    query_date_range = set(pd.date_range(start_date, end_date, freq='D').tolist())
+
+    cleaning_hawkers = []
+    for quarter in range(1, 5):
+        quarter_date_range_col = f"q{quarter}_date_range"
+        quarter_start_col = f"q{quarter}_start"
+        quarter_end_col = f"q{quarter}_end"
+        cleaning_hawkers = df[
+            (df[quarter_date_range_col].apply(lambda qdr: len(set.intersection(set(qdr.tolist()),
+                                                                               query_date_range)) > 0))
+        ][[quarter_start_col, quarter_end_col]].rename(columns={
+            quarter_start_col: "start_date",
+            quarter_end_col: "end_date"
+        })
+
+        if len(cleaning_hawkers) > 0:
+            break
+
+    # Format for printing
+    cleaning_hawkers['start_date'] = cleaning_hawkers['start_date'].apply(lambda dt: dt.strftime("%d/%m"))
+    cleaning_hawkers['end_date'] = cleaning_hawkers['end_date'].apply(lambda dt: dt.strftime("%d/%m"))
+
+    return cleaning_hawkers
+
+
+def hawkers_not_existing(df) -> List:
+    return list(df[df['not_existing']].index)
+
+
+def prepare_hawker_data(df: pd.DataFrame) -> pd.DataFrame:
+    df['not_existing'] = df['hawker_status'].apply(lambda s: "existing" not in s.lower())
+    df = df.set_index("hawker_name")
+
+    cleaning_columns = ["q1_start", "q1_end", "q2_start", "q2_end", "q3_start", "q3_end", "q4_end"]
+    for c in cleaning_columns:
+        df[c] = df[c].apply(lambda d: datetime.strptime(d, "%d/%m/%Y"))
+
+    for q in range(1, 5):
+        quarter_start = f"q{q}_start"
+        quarter_end = f"q{q}_end"
+        df[f"q{q}_date_range"] = df[[quarter_start, quarter_end]] \
+            .apply(lambda row: pd.date_range(row[quarter_start], row[quarter_end], freq='D'), axis=1)
+
+    return df
 
 
 def fetch_records_from_api() -> list:
@@ -82,5 +152,5 @@ api_records = fetch_records_from_api()
 hawker_data = [get_relevant_fields_as_dict(r) for r in api_records]
 
 logging.info("Dumping results into JSON file")
-with open("./hawker_data.json", 'w') as f:
+with open("../data/hawker_data.json", 'w') as f:
     json.dump(hawker_data, f)

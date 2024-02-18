@@ -1,5 +1,5 @@
 from typing import List, Dict
-from data.utils.emojis import EMOJIS
+from utils.emojis import EMOJIS
 import requests
 import random
 import sys

@@ -1,7 +1,8 @@
 name: Update data using Python
-on:
-  schedule:
-    - cron: "0 8 * * 1"
+# on:
+#   schedule:
+#     - cron: "0 8 * * 1"
+on: workflow_dispatch
 
 jobs:
   build-linux:
